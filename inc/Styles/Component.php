@@ -66,7 +66,7 @@ class Component implements Component_Interface, Templating_Component_Interface {
 	 *
 	 * @return string Component slug.
 	 */
-	public function get_slug() : string {
+	public function get_slug(): string {
 		return 'styles';
 	}
 
@@ -87,7 +87,7 @@ class Component implements Component_Interface, Templating_Component_Interface {
 	 *               a callable or an array with key 'callable'. This approach is used to reserve the possibility of
 	 *               adding support for further arguments in the future.
 	 */
-	public function template_tags() : array {
+	public function template_tags(): array {
 		return array(
 			'print_styles' => array( $this, 'print_styles' ),
 		);
@@ -122,9 +122,9 @@ class Component implements Component_Interface, Templating_Component_Interface {
 			 * enqueued based on whether they are necessary for the page content).
 			 */
 			if ( $data['global'] || ! $preloading_styles_enabled && is_callable( $data['preload_callback'] ) && call_user_func( $data['preload_callback'] ) ) {
-				wp_enqueue_style( $handle, $src, array(), $version, $data['media'] );
+				wp_enqueue_style( $handle, $src, $data['deps'], $version, $data['media'] );
 			} else {
-				wp_register_style( $handle, $src, array(), $version, $data['media'] );
+				wp_register_style( $handle, $src, $data['deps'], $version, $data['media'] );
 			}
 
 			wp_style_add_data( $handle, 'precache', true );
@@ -170,7 +170,7 @@ class Component implements Component_Interface, Templating_Component_Interface {
 
 			$preload_uri = $wp_styles->registered[ $handle ]->src . '?ver=' . $wp_styles->registered[ $handle ]->ver;
 
-			echo '<link rel="preload" id="' . esc_attr( $handle ) . '-preload" href="' . esc_url( $preload_uri ) . '" as="style">';
+			echo '<link rel="preload" id="' . esc_attr( $handle ) . '-preload" href="' . esc_url( $preload_uri ) . '" as="style" onload="this.rel=\'stylesheet\'">';
 			echo "\n";
 		}
 	}
@@ -197,7 +197,7 @@ class Component implements Component_Interface, Templating_Component_Interface {
 	 * @param string $relation_type The relation type the URLs are printed.
 	 * @return array URLs to print for resource hints.
 	 */
-	public function filter_resource_hints( array $urls, string $relation_type ) : array {
+	public function filter_resource_hints( array $urls, string $relation_type ): array {
 		if ( 'preconnect' === $relation_type && wp_style_is( 'wp-rig-fonts', 'queue' ) ) {
 			$urls[] = array(
 				'href' => 'https://fonts.gstatic.com',
@@ -230,7 +230,7 @@ class Component implements Component_Interface, Templating_Component_Interface {
 		$css_files = $this->get_css_files();
 		$handles   = array_filter(
 			$handles,
-			function( $handle ) use ( $css_files ) {
+			function ( $handle ) use ( $css_files ) {
 				$is_valid = isset( $css_files[ $handle ] ) && ! $css_files[ $handle ]['global'];
 				if ( ! $is_valid ) {
 					/* translators: %s: stylesheet handle */
@@ -273,7 +273,7 @@ class Component implements Component_Interface, Templating_Component_Interface {
 	 *
 	 * @return array Associative array of $handle => $data pairs.
 	 */
-	protected function get_css_files() : array {
+	protected function get_css_files(): array {
 		if ( is_array( $this->css_files ) ) {
 			return $this->css_files;
 		}
@@ -285,7 +285,7 @@ class Component implements Component_Interface, Templating_Component_Interface {
 			),
 			'wp-rig-comments'   => array(
 				'file'             => 'comments.min.css',
-				'preload_callback' => function() {
+				'preload_callback' => function () {
 					return ! post_password_required() && is_singular() && ( comments_open() || get_comments_number() );
 				},
 			),
@@ -295,19 +295,19 @@ class Component implements Component_Interface, Templating_Component_Interface {
 			),
 			'wp-rig-sidebar'    => array(
 				'file'             => 'sidebar.min.css',
-				'preload_callback' => function() {
+				'preload_callback' => function () {
 					return wp_rig()->is_primary_sidebar_active();
 				},
 			),
 			'wp-rig-widgets'    => array(
 				'file'             => 'widgets.min.css',
-				'preload_callback' => function() {
+				'preload_callback' => function () {
 					return wp_rig()->is_primary_sidebar_active();
 				},
 			),
 			'wp-rig-front-page' => array(
-				'file' => 'front-page.min.css',
-				'preload_callback' => function() {
+				'file'             => 'front-page.min.css',
+				'preload_callback' => function () {
 					global $template;
 					return 'front-page.php' === basename( $template );
 				},
@@ -340,6 +340,7 @@ class Component implements Component_Interface, Templating_Component_Interface {
 					'global'           => false,
 					'preload_callback' => null,
 					'media'            => 'all',
+					'deps'             => array(),
 				),
 				$data
 			);
@@ -353,7 +354,7 @@ class Component implements Component_Interface, Templating_Component_Interface {
 	 *
 	 * @return array Associative array of $font_name => $font_variants pairs.
 	 */
-	protected function get_google_fonts() : array {
+	protected function get_google_fonts(): array {
 		if ( is_array( $this->google_fonts ) ) {
 			return $this->google_fonts;
 		}
@@ -380,7 +381,7 @@ class Component implements Component_Interface, Templating_Component_Interface {
 	 *
 	 * @return string Google Fonts URL, or empty string if no Google Fonts should be used.
 	 */
-	protected function get_google_fonts_url() : string {
+	protected function get_google_fonts_url(): string {
 		$google_fonts = $this->get_google_fonts();
 
 		if ( empty( $google_fonts ) ) {

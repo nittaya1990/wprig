@@ -68,7 +68,7 @@ class Theme {
 		$this->template_tags = new Template_Tags(
 			array_filter(
 				$this->components,
-				function( Component_Interface $component ) {
+				function ( Component_Interface $component ) {
 					return $component instanceof Templating_Component_Interface;
 				}
 			)
@@ -83,7 +83,7 @@ class Theme {
 	public function initialize() {
 		array_walk(
 			$this->components,
-			function( Component_Interface $component ) {
+			function ( Component_Interface $component ) {
 				$component->initialize();
 			}
 		);
@@ -98,7 +98,7 @@ class Theme {
 	 *
 	 * @return Template_Tags Template tags instance.
 	 */
-	public function template_tags() : Template_Tags {
+	public function template_tags(): Template_Tags {
 		return $this->template_tags;
 	}
 
@@ -112,7 +112,7 @@ class Theme {
 	 *
 	 * @throws InvalidArgumentException Thrown when no theme component with the given slug exists.
 	 */
-	public function component( string $slug ) : Component_Interface {
+	public function component( string $slug ): Component_Interface {
 		if ( ! isset( $this->components[ $slug ] ) ) {
 			throw new InvalidArgumentException(
 				sprintf(
@@ -129,11 +129,14 @@ class Theme {
 	/**
 	 * Gets the default theme components.
 	 *
-	 * This method is called if no components are passed to the constructor, which is the common scenario.
+	 * This method is called if no components are passed to the constructor, which is the common scenario.Theme Editor
+	 *
+	 * Theme Editor: 'editor-styles'
+	 * Block Styles: 'wp-block-styles'
 	 *
 	 * @return array List of theme components to use by default.
 	 */
-	protected function get_default_components() : array {
+	protected function get_default_components(): array {
 		$components = array(
 			new Localization\Component(),
 			new Base_Support\Component(),
@@ -151,6 +154,7 @@ class Theme {
 			new Post_Thumbnails\Component(),
 			new EZ_Customizer\Component(),
 			new Styles\Component(),
+			new Scripts\Component(),
 			new Excerpts\Component(),
 		);
 

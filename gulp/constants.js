@@ -46,10 +46,14 @@ export const PHPCSOptions = {
 
 // Theme config name fields and their defaults
 export const nameFieldDefaults = {
-	author: 'The WP Rig Contributors',
 	PHPNamespace: 'WP_Rig\\WP_Rig',
 	slug: 'wp-rig',
 	name: 'WP Rig',
+	theme_uri: 'https://github.com/wprig/wprig/',
+	author: 'The WP Rig Contributors',
+	author_uri: 'https://wprig.io/',
+	description: 'A progressive theme development rig for WordPress.',
+	version: '2.2.0',
 	underscoreCase: 'wp_rig',
 	constant: 'WP_RIG',
 	camelCase: 'WpRig',
@@ -108,6 +112,10 @@ const paths = {
 		src: `${ assetsDir }/images/src/**/*.{jpg,JPG,png,svg,gif,GIF}`,
 		dest: `${ assetsDir }/images/`,
 	},
+	fonts: {
+		src: `${ assetsDir }/fonts/**/*.{woff,woff2,eot,ttf,svg}`,
+		dest: `${ assetsDir }/fonts/`,
+	},
 	export: {
 		src: [],
 		stringReplaceSrc: [
@@ -142,6 +150,7 @@ if ( isProd ) {
 	paths.styles.editorDest = `${ prodAssetsDir }/css/editor/`;
 	paths.scripts.dest = `${ prodAssetsDir }/js/`;
 	paths.images.dest = `${ prodAssetsDir }/images/`;
+	paths.fonts.dest = `${ prodAssetsDir }/fonts/`;
 	paths.languages = {
 		src: `${ prodThemePath }/**/*.php`,
 		dest: `${ prodThemePath }/languages/${ config.theme.slug }.pot`,
